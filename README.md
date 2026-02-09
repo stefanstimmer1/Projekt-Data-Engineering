@@ -18,3 +18,16 @@ Er ist für lokale Entwicklung und Tests optimiert und erlaubt Zugriff sowohl vo
 Vom Host: localhost:29092
 Von anderen Containern: kafka:9092
 Controller-Kommunikation: intern über 9093
+
+### AKHQ
+
+Hier wird AKHQ als leichtgewichtige Web-Oberfläche zur Inspektion und Verwaltung von Kafka verwendet. AKHQ ermöglicht es, Topics, Partitionen, Offsets und Nachrichten per Browser einzusehen.
+
+```
+http://localhost:8080/
+``` 
+
+## Beispieldaten
+
+https://www.kaggle.com/datasets/prasad22/weather-data
+
