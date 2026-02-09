@@ -1,4 +1,4 @@
-import time, os, csv, json
+import os, csv, json
 from confluent_kafka import Producer
 
 BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
@@ -9,24 +9,25 @@ producer = Producer({
     "bootstrap.servers": BOOTSTRAP,
 })
 
-try:
-    with open(CSV_PATH, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            event = {
-                "location": row["Location"],
-                "timestamp": row["Date_Time"],
-                "temperature_c": float(row["Temperature_C"]),
-                "humidity_pct": float(row["Humidity_pct"]),
-                "precipitation_mm": float(row["Precipitation_mm"]),
-                "wind_speed_kmh": float(row["Wind_Speed_kmh"]),
-            }
+if __name__ == "__main__":
+    try:
+        with open(CSV_PATH, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                event = {
+                    "location": row["Location"],
+                    "timestamp": row["Date_Time"],
+                    "temperature_c": float(row["Temperature_C"]),
+                    "humidity_pct": float(row["Humidity_pct"]),
+                    "precipitation_mm": float(row["Precipitation_mm"]),
+                    "wind_speed_kmh": float(row["Wind_Speed_kmh"]),
+                }
 
-            producer.produce(topic = TOPIC, 
+                producer.produce(topic = TOPIC, 
                              value = json.dumps(event).encode("utf-8"))
-            producer.poll(0)
+                producer.poll(0)
 
-    producer.flush()
-    print("done")
-except:
-    print(Exception)
+        producer.flush()
+        print("done")
+    except:
+        print(Exception)
