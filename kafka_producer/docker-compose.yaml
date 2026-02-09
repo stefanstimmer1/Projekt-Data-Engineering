@@ -4,6 +4,8 @@ services:
     container_name: kafka_producer
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"  
+      KAFKA_TOPIC: "weather_data_raw"
+      CSV_PATH: "/data/weather_data.csv"
     networks:
       - data-engineering
 

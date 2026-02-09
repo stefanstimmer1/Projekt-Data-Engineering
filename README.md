@@ -1,11 +1,10 @@
 # Projekt-Data-Engineering
 Batch-basierte Datenarchitektur für eine datenintensive Applikation
 
-## Commands
+## Voraussetzungen
 
 ```
 docker network create data-engineering
-kafka-console-consumer --bootstrap-server kafka:9092 --topic test --from-beginning
 ``` 
 
 ## Kafka (Kraft)
