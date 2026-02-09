@@ -1,0 +1,12 @@
+services:
+  producer:
+    build: .
+    container_name: kafka_producer
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"  
+    networks:
+      - data-engineering
+
+networks:
+  data-engineering:
+    external: true

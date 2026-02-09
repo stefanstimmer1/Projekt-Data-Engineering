@@ -1,6 +1,13 @@
 # Projekt-Data-Engineering
 Batch-basierte Datenarchitektur für eine datenintensive Applikation
 
+## Commands
+
+```
+docker network create data-engineering
+kafka-console-consumer --bootstrap-server kafka:9092 --topic test --from-beginning
+``` 
+
 ## Kafka (Kraft)
 
 Dieser Container startet Apache Kafka im KRaft-Modus (ohne ZooKeeper) als Single-Node-Setup, bei dem Broker und Controller im selben Prozess laufen.

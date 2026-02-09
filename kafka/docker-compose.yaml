@@ -17,6 +17,12 @@ services:
 
     volumes:
       - kafka_data:/var/lib/kafka/data
+    networks:
+      - data-engineering
 
 volumes:
   kafka_data:
+
+networks:
+  data-engineering:
+    external: true
