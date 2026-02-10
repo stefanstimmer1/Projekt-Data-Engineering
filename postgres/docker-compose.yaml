@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      POSTGRES_DB: weather_data
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - data-engineering
+
+volumes:
+  pg_data:
+
+networks:
+  data-engineering:
+    external: true
