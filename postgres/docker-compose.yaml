@@ -12,6 +12,15 @@ services:
       - ./pg_data:/var/lib/postgresql/data
     networks:
       - data-engineering
+  dashboard:
+    build: .
+    container_name: weather-data-dashboard
+    environment:
+      PG_DSN: "postgresql://test:test@postgres:5432/weather_data"
+    ports:
+      - "8501:8501"
+    networks:
+      - data-engineering
 
 volumes:
   pg_data:
