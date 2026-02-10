@@ -98,7 +98,7 @@ if __name__ == "__main__":
             value = None
             key = None
             try:
-                value = raw_value.decode("utf-8")
+                value = json.loads(raw_value.decode("utf-8"))
             except UnicodeDecodeError: 
                 value = repr(raw_value)
             try:

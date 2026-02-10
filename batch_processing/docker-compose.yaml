@@ -1,0 +1,14 @@
+services:
+  batch-processing:
+    build: .
+    container_name: batch-processing
+    environment:
+      RAW_ROOT: "/raw"
+    volumes:
+      - ../kafka_consumer/raw-zone:/raw:ro
+    networks:
+      - data-engineering
+
+networks:
+  data-engineering:
+    external: true
