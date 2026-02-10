@@ -10,6 +10,7 @@ producer = Producer({
 })
 
 if __name__ == "__main__":
+    # evtl check if topic exists
     try:
         with open(CSV_PATH, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)

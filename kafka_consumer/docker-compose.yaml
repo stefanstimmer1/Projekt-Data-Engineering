@@ -1,0 +1,18 @@
+services:
+  raw-persist:
+    build: .
+    container_name: raw_kafka_consumer
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_TOPIC: "weather_data_raw"
+      KAFKA_GROUP_ID: "raw_kafka_consumer"
+      RAW_DIR: "/raw"
+
+    volumes:
+      - ./raw-zone:/raw
+    networks:
+      - data-engineering
+
+networks:
+  data-engineering:
+    external: true
