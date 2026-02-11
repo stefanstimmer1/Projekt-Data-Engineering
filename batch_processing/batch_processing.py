@@ -21,6 +21,61 @@ def extract_day(event: dict):
     if isinstance(ts, str) and len(ts) >= 10:
         return ts[:10]
 
+def prep_data(agg: dict):
+    # prepare data (calculate average)
+    rows = []
+    for (day, location), s in agg:
+        c = s["count"]
+        rows.append((
+            day,
+            location,
+            c,
+            s["sum_temp"] / c,
+            s["sum_humidity"] / c,
+            s["sum_precip"],
+            s["sum_wind"] / c,
+        ))
+    return rows
+
+def send_agg_data_to_pg(rows: list):
+    # write to postgres 
+    conn = psycopg2.connect(PG_DSN)
+    conn.autocommit = False
+
+    with conn.cursor() as cur:
+        # create table
+        cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {TABLE} (
+          day date NOT NULL,
+          location text NOT NULL,
+          count_measurements int NOT NULL,
+          avg_temperature_c double precision NOT NULL,
+          avg_humidity_pct double precision NOT NULL,
+          sum_precipitation_mm double precision NOT NULL,
+          avg_wind_speed_kmh double precision NOT NULL,
+          PRIMARY KEY (day, location)
+        )
+        """)
+        # insert date to table, overwrite if exists
+        execute_batch(cur, f"""
+        INSERT INTO {TABLE} (
+          day, location, count_measurements,
+          avg_temperature_c, avg_humidity_pct, 
+          sum_precipitation_mm, avg_wind_speed_kmh
+        )
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (day, location) DO UPDATE SET
+          count_measurements = EXCLUDED.count_measurements,
+          avg_temperature_c = EXCLUDED.avg_temperature_c,
+          avg_humidity_pct = EXCLUDED.avg_humidity_pct,
+          sum_precipitation_mm = EXCLUDED.sum_precipitation_mm,
+          avg_wind_speed_kmh = EXCLUDED.avg_wind_speed_kmh
+        """, rows, page_size=500)
+
+    conn.commit()
+    conn.close() 
+    print(f"added {len(rows)} rows into {TABLE} table")
+
 if __name__ == "__main__":
     # check path
     if not os.path.isdir(RAW_ROOT):
@@ -82,56 +137,6 @@ if __name__ == "__main__":
 
     print(f"parsed events: total={total_events} used={used_events} groups={len(aggregation)}")
 
-    # prepare data (calculate average)
-    rows = []
-    for (day, location), s in aggregation.items():
-        c = s["count"]
-        rows.append((
-            day,
-            location,
-            c,
-            s["sum_temp"] / c,
-            s["sum_humidity"] / c,
-            s["sum_precip"] / c,
-            s["sum_wind"] / c,
-        ))
+    rows = prep_data(aggregation.items())
 
-    # write to postgres 
-    conn = psycopg2.connect(PG_DSN)
-    conn.autocommit = False
-
-    with conn.cursor() as cur:
-        # create table
-        cur.execute(f"""
-        CREATE TABLE IF NOT EXISTS {TABLE} (
-          day date NOT NULL,
-          location text NOT NULL,
-          count_measurements int NOT NULL,
-          avg_temperature_c double precision NOT NULL,
-          avg_humidity_pct double precision NOT NULL,
-          sum_precipitation_mm double precision NOT NULL,
-          avg_wind_speed_kmh double precision NOT NULL,
-          PRIMARY KEY (day, location)
-        )
-        """)
-        # insert date to table, overwrite if exists
-        execute_batch(cur, f"""
-        INSERT INTO {TABLE} (
-          day, location, count_measurements,
-          avg_temperature_c, avg_humidity_pct, 
-          sum_precipitation_mm, avg_wind_speed_kmh
-        )
-        VALUES (%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT (day, location) DO UPDATE SET
-          count_measurements = EXCLUDED.count_measurements,
-          avg_temperature_c = EXCLUDED.avg_temperature_c,
-          avg_humidity_pct = EXCLUDED.avg_humidity_pct,
-          sum_precipitation_mm = EXCLUDED.sum_precipitation_mm,
-          avg_wind_speed_kmh = EXCLUDED.avg_wind_speed_kmh
-        """, rows, page_size=500)
-
-    conn.commit()
-    conn.close()
-
-    print(f"added {len(rows)} rows into {TABLE} table")
-
+    send_agg_data_to_pg(rows)
