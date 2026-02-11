@@ -65,7 +65,7 @@ Zum stoppen:
 docker compose -p projekt-data-engineering down (-v um alle Volumes zu löschen)
 ```
 
-Um auf
+Um auf den Startzustand zurück zu kommen, müssen alle Volumes gelöscht werden und die Daten in der Raw-Zone entfernt werden.
 
 ### Ablauf
 
@@ -85,3 +85,28 @@ Im normalen Betrieb:
 3. Der Batch Job läuft regelmäßig oder wird per Hand gestartet und aggregiert die Daten. Wenn sich aggregierte Daten ändern, werden sie in der Datenbank überschrieben.
 4. Die Daten können verwendet werden.
 
+## Qualitätsanforderungen
+
+### Verlässlichkeit
+
+Die Verarbeitung erfolgt at-least-once, da Kafka-Offets erst nach erfolgreichem Persistieren der Daten committed werden. Durch append-only Speicherung und idempotente Batch-Aggregation wird Datenverlust sowie inkonsistente Verarbeitung vermieden.
+
+### Skalierbarkeit
+
+Kafka ermöglicht horizontale Skalierung über Partitionierung und parallele Consumer-Instanzen. Die entkoppelte Architektur (Streaming, Batch, Datenbank, Dashboard) erlaubt unabhängige Skalierung einzelner Komponenten.
+
+### Wartbarkeit
+
+Die klare Trennung zwischen Producer, Consumer, Batch-Verarbeitung, Kafka und Postgres erhöht die Modularität und Erweiterbarkeit. Alle Services sind containerisiert und über Umgebungsvariablen konfigurierbar.
+
+### Datensicherheit
+
+Die Services laufen isoliert in einem internen Docker-Netzwerk, wodurch unautorisierter Zugriff minimiert wird. Die Raw Zone ist append-only strukturiert und schützt vor unbeabsichtigten Datenmanipulationen.
+
+### Data Governance
+
+Die Trennung in Raw- und Processed-Zone stellt Nachvollziehbarkeit und Reproduzierbarkeit sicher. Kafka-Metadaten werden mitgespeichert, sodass Datenherkunft und Verarbeitungsschritte transparent bleiben.
+
+### Datenschutz
+
+Es werden ausschließlich nicht-personenbezogene Wetterdaten verarbeitet. Bei realen Daten könnten Zugriffskontrollen, Rollenmodelle und Verschlüsselung ergänzt werden.
