@@ -7,7 +7,6 @@ services:
       KAFKA_TOPIC: "weather_data_raw"
       KAFKA_GROUP_ID: "raw_kafka_consumer"
       RAW_DIR: "/raw"
-
     volumes:
       - ./raw-zone:/raw
     networks:

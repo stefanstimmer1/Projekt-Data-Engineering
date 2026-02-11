@@ -2,8 +2,8 @@ import os, json, time
 from datetime import datetime, timezone
 from confluent_kafka import Consumer, KafkaException
 
-BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:29092")
-TOPIC = os.getenv("KAFKA_TOPIC", "weather")
+BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+TOPIC = os.getenv("KAFKA_TOPIC", "weather_data_raw")
 GROUP_ID = os.getenv("KAFKA_GROUP_ID", "raw_kafka_consumer")
 RAW_DIR = os.getenv("RAW_DIR", "/raw") 
 ROTATE_MB = 32
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 fh.close()
         except Exception as e:
             print(e)
-        # final commit nach letztem Write
+        # final commit
         try:
             consumer.commit(asynchronous=False)
         except Exception as e:
