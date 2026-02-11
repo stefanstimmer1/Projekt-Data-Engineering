@@ -1,8 +1,12 @@
 import os
 import json
 from collections import defaultdict
+import psycopg2
+from psycopg2.extras import execute_batch
 
 RAW_ROOT = os.getenv("RAW_ROOT", "/raw")
+PG_DSN = os.getenv("PG_DSN", "postgresql://test:test@postgres:5432/weather_data")
+TABLE = os.getenv("TABLE", "daily_weather_aggregates")
 
 def iterate_ndjson_files(base_dir: str):
     # reads every file in the raw zone
@@ -92,4 +96,42 @@ if __name__ == "__main__":
             s["sum_wind"] / c,
         ))
 
-    print(rows[1])
+    # write to postgres 
+    conn = psycopg2.connect(PG_DSN)
+    conn.autocommit = False
+
+    with conn.cursor() as cur:
+        # create table
+        cur.execute(f"""
+        CREATE TABLE IF NOT EXISTS {TABLE} (
+          day date NOT NULL,
+          location text NOT NULL,
+          count_measurements int NOT NULL,
+          avg_temperature_c double precision NOT NULL,
+          avg_humidity_pct double precision NOT NULL,
+          sum_precipitation_mm double precision NOT NULL,
+          avg_wind_speed_kmh double precision NOT NULL,
+          PRIMARY KEY (day, location)
+        )
+        """)
+        # insert date to table, overwrite if exists
+        execute_batch(cur, f"""
+        INSERT INTO {TABLE} (
+          day, location, count_measurements,
+          avg_temperature_c, avg_humidity_pct, 
+          sum_precipitation_mm, avg_wind_speed_kmh
+        )
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (day, location) DO UPDATE SET
+          count_measurements = EXCLUDED.count_measurements,
+          avg_temperature_c = EXCLUDED.avg_temperature_c,
+          avg_humidity_pct = EXCLUDED.avg_humidity_pct,
+          sum_precipitation_mm = EXCLUDED.sum_precipitation_mm,
+          avg_wind_speed_kmh = EXCLUDED.avg_wind_speed_kmh
+        """, rows, page_size=500)
+
+    conn.commit()
+    conn.close()
+
+    print(f"added {len(rows)} rows into {TABLE} table")
+
