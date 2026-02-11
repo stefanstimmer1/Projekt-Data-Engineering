@@ -1,5 +1,6 @@
 import os, csv, json
 from confluent_kafka import Producer
+from confluent_kafka.admin import AdminClient, NewTopic
 
 BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 TOPIC = os.getenv("KAFKA_TOPIC", "weather_data_raw")
@@ -9,8 +10,32 @@ producer = Producer({
     "bootstrap.servers": BOOTSTRAP,
 })
 
+def ensure_topic_exists():
+    # ensure topic exists, if not create topic
+    admin = AdminClient({"bootstrap.servers": BOOTSTRAP})
+
+    metadata = admin.list_topics(timeout=10)
+
+    if TOPIC in metadata.topics:
+        print(f"topic \"{TOPIC}\" exists.")
+        return
+
+    print(f"topic \"{TOPIC}\" not found.")
+    print(f"creating topic \"{TOPIC}\"")
+    new_topic = NewTopic(topic=TOPIC)
+
+    futures = admin.create_topics([new_topic])
+
+    for topic, future in futures.items():
+        try:
+            future.result()
+            print(f"topic \"{topic}\" created.")
+        except Exception as e:
+            print(f"failed to create topic {topic}: {e}")
+            raise
+
 if __name__ == "__main__":
-    # evtl check if topic exists
+    ensure_topic_exists()
     try:
         with open(CSV_PATH, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
@@ -29,6 +54,6 @@ if __name__ == "__main__":
                 producer.poll(0)
 
         producer.flush()
-        print("done")
-    except:
-        print(Exception)
+        print("transfered all data to kafka")
+    except Exception as e:
+        print(f"failed to transfer data to kafka: {e}")
