@@ -1,0 +1,13 @@
+services: {}
+
+include:
+  - ./kafka/docker-compose.yaml
+  - ./postgres/docker-compose.yaml
+  - ./kafka_producer/docker-compose.yaml
+  - ./kafka_consumer/docker-compose.yaml
+  - ./batch_processing/docker-compose.yaml
+
+networks:
+  data-engineering:
+    name: data-engineering
+    driver: bridge

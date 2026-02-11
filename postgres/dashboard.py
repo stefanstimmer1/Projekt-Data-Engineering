@@ -31,17 +31,21 @@ location = st.sidebar.selectbox("Location", locations)
 df_loc = df[df["location"] == location]
 
 # averages
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 col1.metric(
     "Ø Temperature (°C)",
     round(df_loc["avg_temperature_c"].mean(), 2)
 )
 col2.metric(
+    "Ø Humidity (%)",
+    round(df_loc["avg_humidity_pct"].mean(), 2)
+)
+col3.metric(
     "Total precipitation (mm)",
     round(df_loc["sum_precipitation_mm"].sum(), 2)
 )
-col3.metric(
+col4.metric(
     "Ø Wind speed (km/h)",
     round(df_loc["avg_wind_speed_kmh"].mean(), 2)
 )
@@ -52,10 +56,20 @@ st.line_chart(
     df_loc.set_index("day")[["avg_temperature_c"]]
 )
 
+st.subheader(f"Humidity - {location}")
+st.line_chart(
+    df_loc.set_index("day")[["avg_humidity_pct"]]
+)
+
 st.subheader(f"Precipitation - {location}")
 st.bar_chart(
     df_loc.set_index("day")[["sum_precipitation_mm"]]
 )
 
+st.subheader(f"Wind speed - {location}")
+st.bar_chart(
+    df_loc.set_index("day")[["avg_wind_speed_kmh"]]
+)
+
 st.subheader("Aggregated data")
-st.dataframe(df_loc, use_container_width=True)
+st.dataframe(df_loc, width="stretch")

@@ -1,5 +1,5 @@
 services:
-  raw-persist:
+  kafka-consumer:
     build: .
     container_name: raw_kafka_consumer
     environment:
@@ -7,6 +7,9 @@ services:
       KAFKA_TOPIC: "weather_data_raw"
       KAFKA_GROUP_ID: "raw_kafka_consumer"
       RAW_DIR: "/raw"
+    depends_on:
+      kafka:
+        condition: service_healthy
     volumes:
       - ./raw-zone:/raw
     networks:
@@ -14,4 +17,4 @@ services:
 
 networks:
   data-engineering:
-    external: true
+    name: data-engineering

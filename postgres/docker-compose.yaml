@@ -6,10 +6,15 @@ services:
       POSTGRES_DB: weather_data
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d weather_data"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     networks:
       - data-engineering
   dashboard:
@@ -19,6 +24,9 @@ services:
       PG_DSN: "postgresql://test:test@postgres:5432/weather_data"
     ports:
       - "8501:8501"
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - data-engineering
 
@@ -27,4 +35,4 @@ volumes:
 
 networks:
   data-engineering:
-    external: true
+    name: data-engineering

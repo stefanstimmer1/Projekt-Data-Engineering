@@ -1,9 +1,14 @@
 services:
   batch-processing:
     build: .
+    profiles:
+      - batch
     container_name: batch-processing
     environment:
       RAW_ROOT: "/raw"
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ../kafka_consumer/raw-zone:/raw:ro
     networks:
@@ -11,4 +16,4 @@ services:
 
 networks:
   data-engineering:
-    external: true
+    name: data-engineering

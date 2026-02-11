@@ -39,6 +39,21 @@ def current_size_bytes(path: str):
     except FileNotFoundError:
         return 0
 
+def wait_for_topic():
+    start = time.time()
+
+    while True:
+        metadata = consumer.list_topics(timeout=5)
+
+        if TOPIC in metadata.topics:
+            print(f"topic '{TOPIC}' found")
+            return
+
+        if time.time() - start > 60:
+            raise RuntimeError("topic was not created yet, waiting 60s.")
+
+        time.sleep(5)
+
 if __name__ == "__main__":
     # check raw dir
     os.makedirs(RAW_DIR, exist_ok=True)
@@ -49,6 +64,7 @@ if __name__ == "__main__":
     current_path = None
     
     try:
+        wait_for_topic()
         consumer.subscribe([TOPIC])
         while True:
             msg = consumer.poll(5.0)
