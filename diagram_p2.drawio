@@ -1,0 +1,43 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" version="29.3.7">
+  <diagram name="Seite-1" id="_aywj4KGunM1IHl2ZOJj">
+    <mxGraphModel dx="1625" dy="839" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-46" edge="1" parent="1" source="ImKHvzKHDvunj6C9Q3AV-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ImKHvzKHDvunj6C9Q3AV-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;Datenquelle&lt;/font&gt;&lt;/b&gt;&lt;div&gt;synthetische&lt;/div&gt;&lt;div&gt;Wetterdaten von Kaggle mit einer Millionen Datenpunkten.&lt;/div&gt;&lt;div&gt;(&lt;i&gt;CSV-Datei&lt;/i&gt;)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="120" x="290" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-47" edge="1" parent="1" source="ImKHvzKHDvunj6C9Q3AV-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ImKHvzKHDvunj6C9Q3AV-5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;Kafka Producer&lt;/font&gt;&lt;/b&gt;&lt;div&gt;Liest Daten aus Datenquelle und schreibt sie in ein Kafka Topic.&lt;/div&gt;&lt;div&gt;(&lt;i&gt;Microservice&lt;/i&gt;)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="105" width="120" x="480" y="697.5" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-48" edge="1" parent="1" source="ImKHvzKHDvunj6C9Q3AV-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ImKHvzKHDvunj6C9Q3AV-43" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;Kafka&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="65" width="100" x="660" y="717.5" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-49" edge="1" parent="1" source="ImKHvzKHDvunj6C9Q3AV-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ImKHvzKHDvunj6C9Q3AV-44" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-43" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;Kafka Consumer&lt;/font&gt;&lt;/b&gt;&lt;div&gt;Liest Daten aus Kafka und speichert diese in ein append-only Verzeichnis (Raw Storage Zone) als persistenten Speicher.&lt;br&gt;&lt;/div&gt;&lt;div&gt;(&lt;i&gt;Microservice&lt;/i&gt;)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="131.25" width="150" x="810" y="684" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-50" edge="1" parent="1" source="ImKHvzKHDvunj6C9Q3AV-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ImKHvzKHDvunj6C9Q3AV-45" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-44" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;Batch Processing Job&lt;/font&gt;&lt;/b&gt;&lt;div&gt;Daten werden aus Verzeichnis gelesen und periodisch verarbeitet. Ergebnisse werden in ein eigenes Verzeichnis (Processed Zone) gespeichert.&lt;br&gt;&lt;/div&gt;&lt;div&gt;(&lt;i&gt;Job&lt;/i&gt;)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="122.5" width="200" x="1010" y="688.75" as="geometry" />
+        </mxCell>
+        <mxCell id="ImKHvzKHDvunj6C9Q3AV-45" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;ML Training&lt;/font&gt;&lt;/b&gt;&lt;div&gt;Die verarbeiteten Daten können quartalsweise für das Training verwendet werden.&lt;/div&gt;" vertex="1">
+          <mxGeometry height="122.5" width="200" x="1260" y="688.75" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
