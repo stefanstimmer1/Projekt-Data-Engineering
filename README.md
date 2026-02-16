@@ -1,5 +1,8 @@
 # Projekt-Data-Engineering
-Batch-basierte Datenarchitektur für eine datenintensive Applikation
+
+## Kurzes Abstract
+
+Dieses Projekt entwickelt eine batch-basierte Datenpipeline zur Verarbeitung von Wetterdaten aus einem Kaggle-Datensatz mit mehreren Standorten. Die Architektur nutzt Kafka zur Entkopplung, speichert Rohdaten append-only und berechnet Tagesdurchschnitte pro Ort. Aggregierte Ergebnisse werden in PostgreSQL gespeichert und über ein Streamlit-Dashboard visualisiert.
 
 ![Pipeline](/diagram/diagram_p2.png)
 
